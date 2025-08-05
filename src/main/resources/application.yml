@@ -1,8 +1,54 @@
-#
-# application.yml — главный конфигурационный файл Spring Boot.
+# application.yml
 
-Что нужно сделать:
-  - Указать настройки подключения к базе данных.
-  - Указать порт приложения.
-  - Настроить параметры безопасности и JWT.
-  - Включить Swagger UI.
+server:
+  port: 8080  # Порт приложения
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bank_db  # URL базы данных
+    username: postgres  # Логин БД
+    password: postgres  # Пароль БД
+    driver-class-name: org.postgresql.Driver  # Драйвер PostgreSQL
+  
+  jpa:
+    hibernate:
+      ddl-auto: none  # Не создаем схему автоматически (используем Liquibase)
+    show-sql: true  # Показывать SQL в логах (для разработки)
+    properties:
+      hibernate:
+        format_sql: true  # Форматированный SQL в логах
+        jdbc:
+          lob:
+            non_contextual_creation: true  # Для работы с PostgreSQL
+
+  liquibase:
+    change-log: classpath:/db/migration/db.changelog-master.yaml  # Путь к главному файлу миграций
+    enabled: true  # Включить Liquibase
+
+#  security:
+#    user:
+#      name: admin@bank.com  # Дефолтный админ (для тестов)
+#      password: admin123
+#      roles: ADMIN
+#
+# Настройки JWT
+jwt:
+  secret: your-very-long-secret-key-that-is-at-least-64-characters-long-1234567890abcdef  # Секретный ключ (минимум 256 бит)
+  expiration-ms: 86400000  # Время жизни токена (24 часа)
+  issuer: bank-card-system  # Издатель токена
+
+## Настройки Swagger/OpenAPI
+#springdoc:
+#  swagger-ui:
+#    path: /swagger-ui.html  # URL для Swagger UI
+#    enabled: true  # Включить Swagger UI
+#  api-docs:
+#    path: /v3/api-docs  # URL для OpenAPI JSON
+#  default-consumes-media-type: application/json
+#  default-produces-media-type: application/json
+#
+## Дополнительные настройки безопасности
+#security:
+#  masking:
+#    card-number-pattern: "\\b(\\d{4})(\\d{4})(\\d{4})(\\d{4})\\b"  # Регулярка для маскировки карт
+#    replacement: "**** **** **** \$4"  # Шаблон маскировки (последние 4 цифры видны)
